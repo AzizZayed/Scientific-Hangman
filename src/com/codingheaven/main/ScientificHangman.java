@@ -164,13 +164,22 @@ public class ScientificHangman extends JPanel {
 
 			if (state == kSTATES) {
 				JOptionPane.showMessageDialog(this,
-						"You Lost. It was element " + (Arrays.binarySearch(elements, word) + 1) + ", " + word,
+						"You Lost. It was element " + (linearSearch(elements, word) + 1) + ", " + word,
 						"Hang Man", JOptionPane.INFORMATION_MESSAGE);
 				restart();
 			}
 		}
 
 		repaint();
+	}
+	
+	private int linearSearch(String arr[], String elementToSearch) {
+
+	    for (int index = 0; index < arr.length; index++) {
+	        if (arr[index].equals(elementToSearch))
+	            return index;
+	    }
+	    return -1;
 	}
 
 	@Override
