@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Scanner;
 
 import javax.imageio.ImageIO;
@@ -25,19 +24,21 @@ public class ScientificHangman extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final int WIDTH = 800, HEIGHT = 600;
+	private static final int WIDTH = 800, HEIGHT = 600; // width and height of panel
 
-	private static final int kSTATES = 7;
-	private static BufferedImage[] states = new BufferedImage[kSTATES];
-	private static String[] elements;
+	private static final int kSTATES = 7; // number of chances (states), basically number of images
+	private static BufferedImage[] states = new BufferedImage[kSTATES]; // all images
+	private int state = 1; // current state
 
-	private int state = 1;
-	private int goodGuesses = 0;
-	private String word, used = "";
-	private boolean[] guessed;
+	private static String[] elements; // all the 118 elements of the periodic table
+	private String word, used = ""; // current words, and used letters
 
-	// Graphics g;
+	private int goodGuesses = 0; // keep count of the number of good guesses
+	private boolean[] guessed; // keep track of which letters from the word were guessed
 
+	/**
+	 * Constructor
+	 */
 	public ScientificHangman() {
 		canvasSetup();
 		loadImages();
@@ -45,6 +46,9 @@ public class ScientificHangman extends JPanel {
 		chooseWord();
 	}
 
+	/**
+	 * Load all the 118 periodic elements from a text file
+	 */
 	private void loadElements() {
 		Scanner scanner;
 		int count = 0;
@@ -68,6 +72,9 @@ public class ScientificHangman extends JPanel {
 		scanner.close();
 	}
 
+	/**
+	 * Load all images from the res folder
+	 */
 	private void loadImages() {
 
 		for (int i = 0; i < kSTATES; i++) {
@@ -79,6 +86,9 @@ public class ScientificHangman extends JPanel {
 		}
 	}
 
+	/**
+	 * setup canvas size, settings and events
+	 */
 	private void canvasSetup() {
 		this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		this.setMaximumSize(new Dimension(WIDTH, HEIGHT));
@@ -103,17 +113,21 @@ public class ScientificHangman extends JPanel {
 		});
 	}
 
+	/**
+	 * Chose a word randomly from the list
+	 */
 	private void chooseWord() {
 		int randomIndex = (int) (Math.random() * elements.length);
 
 		word = elements[randomIndex];
 
-		// System.out.println(word);
-
 		guessed = new boolean[word.length()];
 
 	}
 
+	/**
+	 * Restart the game
+	 */
 	private void restart() {
 		chooseWord();
 
@@ -122,6 +136,12 @@ public class ScientificHangman extends JPanel {
 		goodGuesses = 0;
 	}
 
+	/**
+	 * Checks if character entered is part of the word, and check if the player won
+	 * or lost too and act accordingly 
+	 * 
+	 * @param keyChar, the entered character
+	 */
 	private void checkChar(char keyChar) {
 
 		if (used.contains(Character.toString(keyChar)))
@@ -140,7 +160,7 @@ public class ScientificHangman extends JPanel {
 				contains = true;
 				goodGuesses++;
 
-				// win
+				// win check
 				if (goodGuesses == word.length()) {
 					repaint();
 
@@ -164,22 +184,28 @@ public class ScientificHangman extends JPanel {
 
 			if (state == kSTATES) {
 				JOptionPane.showMessageDialog(this,
-						"You Lost. It was element " + (linearSearch(elements, word) + 1) + ", " + word,
-						"Hang Man", JOptionPane.INFORMATION_MESSAGE);
+						"You Lost. It was element " + (linearSearch(elements, word) + 1) + ", " + word, "Hang Man",
+						JOptionPane.INFORMATION_MESSAGE);
 				restart();
 			}
 		}
 
 		repaint();
 	}
-	
+
+	/**
+	 * regular linear search algorithm, searches for the index of the element in the element array
+	 * @param arr, the array we wish to search in
+	 * @param elementToSearch, the element we wish to find
+	 * @return the index of the element we wish to find, returns -1 if doesn't exist
+	 */
 	private int linearSearch(String arr[], String elementToSearch) {
 
-	    for (int index = 0; index < arr.length; index++) {
-	        if (arr[index].equals(elementToSearch))
-	            return index;
-	    }
-	    return -1;
+		for (int index = 0; index < arr.length; index++) {
+			if (arr[index].equals(elementToSearch))
+				return index;
+		}
+		return -1;
 	}
 
 	@Override
