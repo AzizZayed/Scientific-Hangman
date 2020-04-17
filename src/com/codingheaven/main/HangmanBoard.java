@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -141,6 +142,7 @@ public class HangmanBoard {
 
 				// win check
 				if (goodGuesses == word.length()) {
+					gameReference.repaint();
 
 					int triesLeft = kSTATES - state;
 					String tries = (triesLeft == 1 ? " try" : " tries");
@@ -156,6 +158,7 @@ public class HangmanBoard {
 				state++;
 
 			if (state == kSTATES) {
+				gameReference.repaint();
 				notify(gameReference, "You Lost. It was element " + (wordIndex + 1) + ", " + word);// lost
 				restart();
 			}
@@ -181,7 +184,10 @@ public class HangmanBoard {
 	 * @param ref    - reference to the JPanel parent containing the board
 	 */
 	public void draw(Graphics g, int width, int height, ScientificHangman ref) {
-		((Graphics2D) g).drawImage(states[state - 1], 0, 0, ref);
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+		g2d.drawImage(states[state - 1], 0, 0, ref);
 
 		// draw the lines for the game and guessed letters
 		drawWord(g, width);
@@ -214,7 +220,7 @@ public class HangmanBoard {
 				for (int j = 0; j < guessed.length; j++)
 					guessed[i] = true;
 
-			String letter = word.substring(i, i + 1);
+			String letter = Character.toString(word.charAt(i));
 			int strWidth = g.getFontMetrics().stringWidth(letter);
 
 			if (guessed[i])
@@ -237,7 +243,6 @@ public class HangmanBoard {
 		int y = 150;
 
 		g.setFont(new Font("Calibri", Font.PLAIN, txtSize));
-
 		g.drawString("Space bar to change word.", x, y + txtSize + 5);
 
 		// draw used letters
